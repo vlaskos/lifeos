@@ -52,6 +52,18 @@ Official Notion plugin first, then LifeOS:
 
 Restart Claude Code, approve Notion access in the browser, say "set up LifeOS".
 
+### Any agent (Codex, Cursor, Copilot)
+
+LifeOS also ships as an [Agent Plugins 1.0](https://agent-plugins.org) package: a root `plugin.json`, an `mcp.json` pointing at the hosted Notion MCP, and the same `skills/`. Any conformant client loads the folder. The format is standard; the install command isn't, so it's per client.
+
+```text
+git clone https://github.com/vlaskos/lifeos
+```
+
+Codex: copy `skills/lifeos-*` into `~/.agents/skills/`, add the `notion` server from `mcp.json` to `~/.codex/config.toml`, then run `codex mcp login notion`. Other clients: point their plugin loader at the folder.
+
+Duplicate the template, say "set up LifeOS". The skills are plain language, so they carry over; only the Notion tool names may differ.
+
 ### ZIP
 
 Skill ZIPs are in [Releases](https://github.com/vlaskos/lifeos/releases). In Claude: Customize, Skills, +, Upload a skill.
