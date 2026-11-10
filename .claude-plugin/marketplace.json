@@ -1,0 +1,14 @@
+{
+  "name": "lifeos",
+  "owner": {
+    "name": "Vlad Kosyi",
+    "url": "https://github.com/vlaskos"
+  },
+  "plugins": [
+    {
+      "name": "lifeos",
+      "source": "./",
+      "description": "LifeOS for Notion: setup + daily skills (capture, inbox, focus, status, update). Requires the official Notion plugin or connector."
+    }
+  ]
+}

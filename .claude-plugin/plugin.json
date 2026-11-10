@@ -1,0 +1,9 @@
+{
+  "name": "lifeos",
+  "version": "0.1.0",
+  "description": "LifeOS for Notion: set up a goals-and-streams dashboard and run it by talking to Claude.",
+  "author": { "name": "Vlad Kosyi", "url": "https://github.com/vlaskos" },
+  "homepage": "https://github.com/vlaskos/lifeos",
+  "license": "MIT",
+  "keywords": ["notion", "productivity", "goals", "life-os", "skills"]
+}

@@ -1,0 +1,325 @@
+# LifeOS for Notion — system spec (v0.1)
+# Snapshot of a working personal setup (captured 2026-11-10), generalised:
+# no personal entries, English labels, areas chosen by the user at install time.
+#
+# Used by:
+#   1. the public Notion template (things the API cannot create live there)
+#   2. the lifeos-setup skill (personalises the duplicated template via Notion MCP)
+
+meta:
+  name: LifeOS
+  version: 0.1.0
+  language: en
+  scope: notion-only            # v1: no Obsidian, no other MCP
+
+# ---------------------------------------------------------------------------
+# Rules the system is built around
+# ---------------------------------------------------------------------------
+rules:
+  wip_limit_in_progress_streams: 4     # max streams in "In progress" at once
+  weekly_focus_max: 3                  # max streams with "Weekly focus" checked
+  next_step_style: "A verb, doable in 30 minutes or less"
+  idea_flow: "Idea -> Inbox -> (button) -> Parking of its area -> Planned -> In progress -> Done"
+
+# Area presets. Default setup = the author's setup: all 8 areas, a board for each.
+# The installer offers this default first; the user can drop, rename or add areas.
+area_presets:
+  - { name: Work,    color: purple }
+  - { name: Self-development, color: orange }
+  - { name: Sport,   color: blue }
+  - { name: Health,  color: red }
+  - { name: Finance, color: pink }
+  - { name: Family,  color: default }
+  - { name: Soul,    color: yellow }
+  - { name: Travel,  color: green }
+
+# ---------------------------------------------------------------------------
+# Databases
+# ---------------------------------------------------------------------------
+databases:
+
+  goals_streams:
+    title: "Goals & Streams"
+    description: >
+      One database for goals and streams. Type: 🎯 Goal = an outcome;
+      🔄 Stream = what I am working on now (with a next step, under the WIP limit).
+      A stream points to its goal via "Goal ↑".
+    properties:
+      Name:            { type: title }
+      Type:
+        type: select
+        options:
+          - { name: "🎯 Goal",   color: purple }
+          - { name: "🔄 Stream", color: blue }
+      Area:            { type: select, options: from_install }   # see area_presets
+      Status:
+        type: status
+        default: Parking
+        groups:
+          to_do:       [ { name: Planned, color: purple }, { name: Parking, color: gray } ]
+          in_progress: [ { name: In progress, color: blue } ]
+          complete:    [ { name: Done, color: green } ]
+      Next step:       { type: text, description: "A verb, 30 minutes or less" }
+      Weekly focus:    { type: checkbox, description: "Max 3 streams per week" }
+      Goal ↑:          { type: relation, target: goals_streams, dual: "Streams ↓" }
+      Streams ↓:       { type: relation, target: goals_streams, dual: "Goal ↑" }
+      Progress:
+        type: formula
+        description: "Share of the goal's streams that are Done"
+        # Reconstructed; verify against the template before release.
+        expression: >
+          if(empty(prop("Streams ↓")), 0,
+             prop("Streams ↓").filter(current.prop("Status") == "Done").length()
+             / prop("Streams ↓").length())
+      Period:          { type: select, options: from_install }   # e.g. "Year 2026", "Q4 2026", "Q1 2027"
+      Deadline:        { type: date }
+      When:            { type: date, description: "Time window from-to (trip, start, season). Deadline is separate." }
+      Success criterion: { type: text }
+      Tags:            { type: multi_select, options: [ { name: Learning, color: blue } ] }
+      Blocked by:      { type: relation, target: goals_streams, dual: Blocking }
+      Blocking:        { type: relation, target: goals_streams, dual: "Blocked by" }
+      Page:            { type: url, description: "Link to the working page of the goal or stream" }
+      Updated:         { type: last_edited_time }
+    excluded_from_v1: [ Obsidian, Place ]
+
+  inbox:
+    title: Inbox
+    description: >
+      Raw ideas that are not streams yet. New ideas land here; pick an Area,
+      then press "Processed" (column "To parking") to create a stream in the
+      Parking column of that area.
+    properties:
+      Idea:      { type: title }
+      Area:      { type: select, options: "same_as goals_streams.Area" }
+      Status:
+        type: select
+        options:
+          - { name: New,       color: blue }
+          - { name: Processed, color: green }
+          - { name: Dismissed, color: gray }
+      Note:      { type: text }
+      Stream:    { type: relation, target: goals_streams }
+      Created:   { type: created_time }
+      To parking:
+        type: button
+        template_only: true            # Notion API cannot create button properties
+        label: Processed
+        actions:
+          - add_page_to: goals_streams
+            set:
+              Name:   "formula: This page.Idea"
+              Area:   "formula: This page.Area"
+              Type:   "🔄 Stream"
+              Status: Parking
+          - edit: this_page
+            set:
+              Status: Processed
+              Stream: "replace with: page added in step 1"
+        known_limit: >
+          Buttons cannot stop on a condition: pressed with an empty Area it still
+          creates a stream without an area (visible only on the Overview board).
+
+# ---------------------------------------------------------------------------
+# Dashboard page
+# ---------------------------------------------------------------------------
+dashboard:
+  title: LifeOS
+  full_width: true
+  layout:
+
+    - columns:
+        - width: 31
+          blocks:
+            - area_page_links: true            # one sub-page per area (optional)
+            - view: weekly_focus_list
+            - view: deadlines_list
+            - button_block:
+                label: Idea
+                template_only: true
+                action: "add page to inbox (Status = New)"   # verify exact config in template
+        - width: 69
+          blocks:
+            - view: areas_wheel
+
+    - linked_db:
+        source: inbox
+        views: [ inbox_to_process ]
+
+    - tabs:
+        - tab: { icon: "🧭", name: Overview }
+          blocks:
+            - linked_db:
+                views: [ streams_board, timeline, weekly_focus_table, deadlines_month, goals_progress, goals_board ]
+            - linked_db:
+                views: [ stagnation ]
+        - tab_per_area:                         # generated for every area the user picked
+            icon: from_install
+            linked_db:
+              views: [ area_view ]              # board / timeline / table — chosen per area
+
+
+# ---------------------------------------------------------------------------
+# Views (DSL as accepted by Notion MCP create_view / update_view)
+# ---------------------------------------------------------------------------
+views:
+
+  streams_board:
+    source: goals_streams
+    type: board
+    name: "Streams board"
+    icon: "📋"
+    configure: >
+      FILTER "Type" = "🔄 Stream" OR "Type" IS EMPTY;
+      GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact;
+      SHOW "Name", "Area", "Goal ↑", "Next step"
+    note: "Rows without a type stay visible, so quick ideas never disappear."
+
+  goals_board:
+    source: goals_streams
+    type: board
+    name: "Goals board"
+    icon: "🎯"
+    configure: >
+      FILTER "Type" = "🎯 Goal";
+      GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact;
+      SHOW "Name", "Area", "Progress", "Period"
+
+  timeline:
+    source: goals_streams
+    type: timeline
+    name: Timeline
+    icon: "🗓️"
+    configure: >
+      FILTER "Status" != "Done"; TIMELINE BY "When"; GROUP BY "Area"; SHOW "Name"
+
+  weekly_focus_table:
+    source: goals_streams
+    type: table
+    name: "Weekly focus"
+    icon: "⭐"
+    configure: >
+      FILTER "Weekly focus" = TRUE AND "Status" != "Done"; SORT BY "Area" ASC;
+      SHOW "Name", "Area", "Goal ↑", "Next step", "Status", "Deadline"
+
+  weekly_focus_list:
+    source: goals_streams
+    type: list
+    name: "Weekly focus"
+    icon: "⭐"
+    configure: >
+      FILTER "Weekly focus" = TRUE AND "Status" != "Done"; SORT BY "Area" ASC;
+      SHOW "Name", "Area"
+
+  deadlines_month:
+    source: goals_streams
+    type: table
+    name: "Deadlines this month"
+    icon: "📅"
+    configure: >
+      FILTER "Deadline" IS NOT EMPTY AND "Deadline" <= "one_month_from_now" AND "Status" != "Done";
+      SORT BY "Deadline" ASC;
+      SHOW "Name", "Deadline", "Type", "Area", "Status", "Next step"
+
+  deadlines_list:
+    source: goals_streams
+    type: list
+    name: "Deadlines this month"
+    icon: "📅"
+    configure: >
+      FILTER "Deadline" IS NOT EMPTY AND "Deadline" <= "one_month_from_now" AND "Status" != "Done";
+      SORT BY "Deadline" ASC; SHOW "Name", "Deadline"
+
+  goals_progress:
+    source: goals_streams
+    type: table
+    name: "Goal progress"
+    icon: "🎯"
+    configure: >
+      FILTER "Type" = "🎯 Goal" AND "Status" != "Done"; SORT BY "Area" ASC;
+      SHOW "Name", "Area", "Progress", "Streams ↓", "Status", "Period", "Success criterion"
+
+  stagnation:
+    source: goals_streams
+    type: table
+    name: "Stagnation: longest unchanged first"
+    icon: "⏳"
+    configure: >
+      FILTER "Status" = "In progress" AND "Type" = "🔄 Stream"; SORT BY "Updated" ASC;
+      SHOW "Name", "Next step", "Updated", "Area"
+
+  areas_wheel:
+    source: goals_streams
+    type: chart
+    name: "Areas wheel"
+    configure: >
+      FILTER "Type" = "🎯 Goal"; GROUP BY "Area";
+      CHART donut AGGREGATE count COLOR colorful HEIGHT large CAPTION "Areas of responsibility · goals per area"
+
+  area_view:                    # template for every area tab
+    source: goals_streams
+    name: "{area}"
+    variants:
+      board:    'FILTER "Area" = "{area}"; GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact; SHOW "Name", "Type", "Goal ↑", "Next step", "Page"'
+      timeline: 'FILTER "Area" = "{area}"; TIMELINE BY "When"; SHOW "Name", "Status"'
+      table:    'FILTER "Area" = "{area}"; SORT BY "Status" ASC; SHOW "Name", "Type", "Status", "Next step", "Deadline"'
+    default_variant: board
+
+  inbox_to_process:
+    source: inbox
+    type: table
+    name: "Inbox to process"
+    icon: "📥"
+    configure: >
+      FILTER "Status" = "New" OR "Status" IS EMPTY; SORT BY "Created" DESC;
+      SHOW "Idea", "Area", "To parking", "Status", "Stream", "Created"
+
+# ---------------------------------------------------------------------------
+# Installer interview (lifeos-setup skill)
+# ---------------------------------------------------------------------------
+installer:
+  prerequisites:
+    - "User duplicated the public LifeOS template into their workspace"
+    - "Notion connector (MCP) is connected in Claude"
+  always_created:                 # never asked — part of every install
+    - "Overview tab with all its views"
+    - "Areas wheel (groups goals by Area, so it follows whatever areas the user picked)"
+    - "Weekly focus and deadlines lists, Inbox"
+  questions:
+    - id: areas
+      ask: "Keep the default 8 areas, or drop / rename / add some?"
+      default: area_presets            # all 8, same as the author's setup
+    - id: area_views
+      ask: "Each area gets a board by default. Want a timeline or table for any of them?"
+      default: board
+    - id: wip_limit
+      ask: "How many streams can be In progress at once?"
+      default: 4
+    - id: periods
+      ask: "Which planning periods? (current year + next quarters are suggested)"
+  steps:
+    - "Show the plan and wait for an explicit yes"
+    - "Set Area options on both databases"
+    - "Create one tab view per area with the chosen variant"
+    - "Set Period options"
+    - "Verify every change by reading it back"
+    - "Write a short Operating Guide page for future agents"
+  idempotent: "Re-running updates existing options and views; never duplicates them"
+
+# Things the Notion API cannot do — they live in the template or stay manual.
+api_limits:
+  - "Create button properties or button blocks"
+  - "Delete views or reorder view tabs"
+  - "Create database automations (paid plans only in Notion anyway)"
+  - "Make a button stop on a condition (not supported by Notion buttons)"
+  - "Set the default option of a status property (Status default = Parking is set in the template UI)"
+
+plan_limits:
+  - "Notion Free allows 1 chart per workspace. The Areas wheel uses it; if the user already has a chart, the wheel shows 'Upgrade' instead."
+    # Decision 2026-11-10: keep the wheel; explain this limit in the README.
+
+# Verified config of the dashboard Idea button (copied from the author's setup)
+idea_button:
+  label: "+ Idea"
+  actions:
+    - "Add page to Inbox: Status = New"
+    - "Open page added in Center peek"
