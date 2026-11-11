@@ -12,6 +12,10 @@ Processes Inbox ideas with Status = New (or empty). Does from chat what the
 Read the "LifeOS Guide" page (both data source ids, areas). No Guide → offer
 `lifeos-setup` and stop.
 
+Use field and option names from the Guide's **Names** section. The English names in
+this skill are keys, the dashboard may use another language. No Names section =
+English names.
+
 ## Steps
 1. Query Inbox for Status = New or empty, oldest first. None → "Inbox is empty" and stop.
    Say how many there are: "7 ideas, ~1 minute each. Stop any time."
