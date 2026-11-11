@@ -2,6 +2,7 @@
 Tutorial page created by lifeos-setup as "📖 How LifeOS works" (child of the dashboard).
 Placeholders: {areas} — bullet list of the user's areas; {wip} — WIP limit; {date} — setup date.
 Keep it short: people skim this page.
+Write it in the dashboard language and use the dashboard's own field and status names.
 -->
 
 <callout icon="🧭">This is a starting template, not a finished system. Use it for a couple of weeks, then shape it to fit you — with Claude connected to Notion you can just ask: "add an area Hobby", "make Travel a timeline", "remove the deadlines list". Nothing here is fixed.</callout>
