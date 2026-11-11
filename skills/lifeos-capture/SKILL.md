@@ -11,6 +11,10 @@ Puts one or more ideas into the LifeOS **Inbox** with Status = New.
 Search Notion for the page "LifeOS Guide" and read it (Inbox data source id, areas).
 No Guide → say LifeOS isn't set up yet and offer `lifeos-setup`. Stop.
 
+Use field and option names from the Guide's **Names** section. The English names in
+this skill are keys, the dashboard may use another language. No Names section =
+English names.
+
 ## Steps
 1. Take the idea text from the message. Several ideas → one Inbox page each.
 2. Area:
