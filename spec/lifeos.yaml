@@ -288,6 +288,9 @@ installer:
     - "Areas wheel (groups goals by Area, so it follows whatever areas the user picked)"
     - "Weekly focus and deadlines lists, Inbox"
   questions:
+    - id: language
+      ask: "Which language should the dashboard use?"
+      default: English               # other languages: properties, options, views, tabs and texts are renamed; Guide stores the name map
     - id: areas
       ask: "Keep the default 8 areas, or drop / rename / add some?"
       default: area_presets            # all 8, same as the author's setup
