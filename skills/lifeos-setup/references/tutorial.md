@@ -25,6 +25,7 @@ Keep it short: people skim this page.
 
 ## What's on the dashboard
 
+- **Area pages** (top left) — one page per area for your own notes and subpages.
 - **Weekly focus / Deadlines this month** — what needs you now.
 - **Areas wheel** — how your goals spread across areas.
 - **Inbox to process** — new ideas waiting for an area.
