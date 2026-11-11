@@ -5,8 +5,9 @@ description: Set up or change a LifeOS dashboard in Notion step by step with qui
 
 # LifeOS setup
 
-Turns a duplicated LifeOS template into the user's own dashboard, then writes a
-tutorial page and a LifeOS Guide page that the other LifeOS skills read.
+Turns a duplicated LifeOS template into the user's own dashboard: areas with their
+own tabs and pages, a tutorial page, and a LifeOS Guide page that the other LifeOS
+skills read.
 Re-running it changes an existing setup (add/remove/rename areas, change views) and
 never duplicates anything.
 
@@ -62,7 +63,7 @@ Store: dashboard page id, Goals & Streams data source id, Inbox data source id.
 
 ### 3. Areas
 "An area is a big part of life. Every goal and stream belongs to one area; each area
-gets its own tab on the dashboard."
+gets its own tab and its own page on the dashboard."
 Multi-select, all pre-selected: Work, Self-development, Sport, Health, Finance,
 Family, Soul, Travel. Extra choice: Add my own (then ask for names, max 12 areas
 total, keep 1–25 characters each).
@@ -84,7 +85,8 @@ Choices: Current year + next 2 quarters + next year (default) / My own.
 Compute from today's date.
 
 ### 7. Plan → Build
-Show the plan as a short list (areas, view per area, WIP, periods, pages to create).
+Show the plan as a short list (areas with their icons, view per area, WIP, periods,
+area pages and other pages to create).
 Choices: Build / Change something.
 On Build, do these in order and verify each by reading it back:
 
@@ -101,16 +103,27 @@ On Build, do these in order and verify each by reading it back:
      that tab with `update_content` (`allow_deleting_content: true`). Only the linked
      view goes; records stay.
    - Rename = rename the option, the tab title and the view name.
-4. **Tutorial page** "📖 How LifeOS works" under the dashboard, from
-   `references/tutorial.md` with the placeholders filled. Link it at the top of the
-   left column. In change mode, update it instead of creating a new one.
-5. **LifeOS Guide** page (child of the dashboard, can be collapsed in a toggle):
-   database ids, area list, WIP limit, weekly focus max, setup date, skill version.
+4. **Area pages**: one child page of the dashboard per area, title = area name,
+   icon = the area's emoji (presets: Work 💼, Self-development 🌱, Sport 🏃,
+   Health ❤️, Finance 💰, Family 🏡, Soul 🕯️, Travel ✈️; for a custom area pick a
+   fitting emoji and show it in the plan). Put the list of area pages at the top of
+   the left column, in tab order, above the tutorial and Databases links. These
+   pages are for the user's own notes and subpages.
+   - Rename an area = rename its page too.
+   - Remove an area = never delete its page (it may hold notes). Ask: keep it in the
+     list, or move it out of the list.
+5. **Tutorial page** "📖 How LifeOS works" under the dashboard, from
+   `references/tutorial.md` with the placeholders filled. Link it in the left
+   column right below the area pages. In change mode, update it instead of creating
+   a new one.
+6. **LifeOS Guide** page (child of the dashboard, can be collapsed in a toggle):
+   database ids, area list with page links, WIP limit, weekly focus max, setup date, skill version.
    Other LifeOS skills read this first.
 
 ### 8. Verify
-Fetch the dashboard and both data sources. Check: every chosen area has an option and
-a tab; no tab for a removed area; tutorial and Guide exist. Fix and re-check once;
+Fetch the dashboard and both data sources. Check: every chosen area has an option, a
+tab and a page in the left-column list; no tab for a removed area; tutorial and
+Guide exist. Fix and re-check once;
 report anything still off in plain words.
 
 ### 9. Finish
