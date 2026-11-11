@@ -29,7 +29,7 @@ You need Notion and Claude. Pick one way.
 
    > Set up LifeOS using https://github.com/vlaskos/lifeos/blob/main/skills/lifeos-setup/SKILL.md
 
-Claude asks a few short questions with quick options. Nothing changes in Notion until you confirm the plan.
+Claude asks a few short questions with quick options, starting with the dashboard language. Nothing changes in Notion until you confirm the plan.
 
 ### Skills in your Notion
 
