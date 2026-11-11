@@ -11,6 +11,10 @@ Natural-language edits to Goals & Streams.
 Read the "LifeOS Guide" page (data source ids, areas). No Guide → offer
 `lifeos-setup` and stop.
 
+Use field and option names from the Guide's **Names** section. The English names in
+this skill are keys, the dashboard may use another language. No Names section =
+English names.
+
 ## Steps
 1. Find the record(s) by name (fuzzy). Several matches → quick choice with area and
    status shown. None → say so and offer to create it.
