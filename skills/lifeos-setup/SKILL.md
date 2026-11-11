@@ -22,8 +22,8 @@ view configs or limits. The tutorial text is in `references/tutorial.md`.
 - Put the explanation inside the question text as well: some clients hide text
   that sits right before the buttons.
 - No walls of text. Say what the step does and what the user will see in Notion.
-- Use the user's language for the conversation; Notion content stays English
-  unless the user asks otherwise.
+- Use the user's language for the conversation. The dashboard content uses the
+  language chosen in step 1a.
 - Never change anything in Notion before step 7 ("Build").
 
 ## Prerequisites
@@ -43,7 +43,8 @@ view configs or limits. The tutorial text is in `references/tutorial.md`.
 ### 0. Detect mode
 Search Notion for a page titled "LifeOS Guide".
 - Found → **change mode**: read it (database IDs, areas, WIP) and ask what to change
-  (Add area / Remove area / Rename area / Change an area's view / Rerun full setup).
+  (Add area / Remove area / Rename area / Change an area's view / Change language /
+  Rerun full setup).
   Jump to the matching step, then to 7.
 - Not found → **new setup**, continue with 1.
 
@@ -51,6 +52,13 @@ Search Notion for a page titled "LifeOS Guide".
 "LifeOS is one Notion dashboard for goals, streams and ideas. Setup takes about
 5 minutes; nothing changes until you confirm the plan."
 Choices: Start / What's inside? (answer in 3 bullets, then ask again).
+
+### 1a. Language
+"Which language should the dashboard use? Fields, statuses, areas, tabs and the
+tutorial will be in it."
+Choices: English (default) / the user's chat language if it isn't English / Other
+(ask which).
+Store the language. English = the template as is, nothing to rename.
 
 ### 2. Find the template copy
 "Open the LifeOS template and press Duplicate. I'll find the copy in your workspace."
@@ -90,6 +98,25 @@ area pages and other pages to create).
 Choices: Build / Change something.
 On Build, do these in order and verify each by reading it back:
 
+0. **Language** (skip for English). Translate short and natural, like a native
+   Notion user would name things, then rename:
+   - Properties on both databases with `RENAME COLUMN`: Name, Type, Area, Status,
+     Next step, Weekly focus, Period, Deadline, When, Success criterion, Tags, Page,
+     Updated, Progress, Goal ↑, Streams ↓, Blocked by, Blocking; Inbox: Idea, Note,
+     Stream, Created, To parking (the button column).
+   - Options: Type (🎯 Goal, 🔄 Stream), Status (Parking, Planned, In progress,
+     Done), Inbox Status (New, Processed, Dismissed), Period labels, preset areas.
+     Keep each option in its status group and keep Parking as the default.
+   - Then re-check: Status default is still Parking, and both buttons still set
+     the right values (open them in the browser if a browser tool is available).
+     Fix anything that broke before going on.
+   - Button labels ("+ Idea", "Processed") can't be changed through the API.
+     With a browser tool, rename them in the button settings; otherwise tell the
+     user where to do it.
+   - Everything created later in Build (view names, tab titles, area pages,
+     tutorial, dashboard intro line) is written in the chosen language.
+   - Filters, formulas, relations and button actions point to IDs, not names, so
+     renaming keeps them working.
 1. **Area options** on both databases: `ALTER COLUMN "Area" SET SELECT(...)` with the
    chosen areas (keep existing option colors; new ones get unused colors).
    Before removing an option, count records using it; if any, ask first.
@@ -117,8 +144,10 @@ On Build, do these in order and verify each by reading it back:
    column right below the area pages. In change mode, update it instead of creating
    a new one.
 6. **LifeOS Guide** page (child of the dashboard, can be collapsed in a toggle):
-   database ids, area list with page links, WIP limit, weekly focus max, setup date, skill version.
-   Other LifeOS skills read this first.
+   database ids, area list with page links, WIP limit, weekly focus max, setup date,
+   skill version, language, and a **Names** section: one line per property and
+   option, `English key = name on the dashboard` (also for English, so the format is
+   always the same). Other LifeOS skills read this first and use these names.
 
 ### 8. Verify
 Fetch the dashboard and both data sources. Check: every chosen area has an option, a
