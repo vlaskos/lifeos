@@ -11,6 +11,10 @@ Read-only summary. Changes nothing.
 Read the "LifeOS Guide" page (data source ids, WIP limit). No Guide → offer
 `lifeos-setup` and stop.
 
+Use field and option names from the Guide's **Names** section. The English names in
+this skill are keys, the dashboard may use another language. No Names section =
+English names.
+
 ## Report (keep it under ~10 lines)
 - **Focus this week** — streams with Weekly focus, each with its Next step
   (flag ones with no next step).
