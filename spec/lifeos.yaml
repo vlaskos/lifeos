@@ -130,7 +130,9 @@ dashboard:
     - columns:
         - width: 31
           blocks:
-            - area_page_links: true            # one sub-page per area (optional)
+            - area_pages: true                 # one child page per area, tab order, created by lifeos-setup
+            - page_link: tutorial              # How LifeOS works
+            - page_link: databases
             - view: weekly_focus_list
             - view: deadlines_list
             - button_block:
@@ -281,6 +283,7 @@ installer:
     - "User duplicated the public LifeOS template into their workspace"
     - "Notion connector (MCP) is connected in Claude"
   always_created:                 # never asked — part of every install
+    - "Area pages: one page per area at the top of the left column, for the user's own notes"
     - "Overview tab with all its views"
     - "Areas wheel (groups goals by Area, so it follows whatever areas the user picked)"
     - "Weekly focus and deadlines lists, Inbox"
