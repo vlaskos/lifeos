@@ -11,6 +11,10 @@ Chooses this week's focus in Goals & Streams.
 Read the "LifeOS Guide" page (data source ids, WIP limit, focus max = 3).
 No Guide → offer `lifeos-setup` and stop.
 
+Use field and option names from the Guide's **Names** section. The English names in
+this skill are keys, the dashboard may use another language. No Names section =
+English names.
+
 ## Steps
 1. Read streams: In progress, Planned, and those with Weekly focus checked.
    Show a short picture: "In progress 5/4 (over the limit), focus last week: A, B, C."
