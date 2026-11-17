@@ -8,14 +8,27 @@ LifeOS keeps your goals, what you're working on and the next step for each in on
 
 Claude sets it up in about 5 minutes, then you run it by talking to Claude. I built it for myself. This is the same setup, without my data.
 
+And it's yours to change. Areas, boards, fields, views: ask Claude and it reshapes the whole dashboard for you, no Notion settings to learn.
+
 ## What's inside
 
 - Goals and streams. A goal is the outcome, a stream is the work toward it.
-- Areas. Work, Sport, Travel and so on, each with its own board.
+- Areas. Work, Sport, Travel and so on. Each gets a Streams board, a Goals board and a page for your notes.
 - Inbox. Press + Idea to save an idea, pick its area, press Processed to park it there.
-- Weekly focus and a WIP limit. Up to 3 streams in focus, 4 in progress by default.
+- Weekly focus. Up to 3 streams that get your time this week.
+- Areas wheel. How your goals spread across areas.
 
-Treat it as a starting point. Use it for a couple of weeks, then ask Claude to change what doesn't fit.
+## Make it yours
+
+This is a starting point, not a fixed system. With Claude connected to Notion you change the dashboard by asking:
+
+- "add an area Hobby"
+- "make Travel a timeline"
+- "show the deadline on stream cards"
+- "add a calendar view to Sport"
+- "rename Parking to Someday"
+
+Use it for a couple of weeks, then reshape whatever doesn't fit. Claude does the Notion part.
 
 ## Install
 
