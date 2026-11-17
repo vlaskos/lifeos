@@ -1,6 +1,6 @@
 ---
 name: lifeos-setup
-description: Set up or change a LifeOS dashboard in Notion step by step with quick choices - areas, views, WIP, periods, tutorial. Use for "set up LifeOS" or adding/removing areas.
+description: Set up or change a LifeOS dashboard in Notion step by step with quick choices - language, areas, views, periods, tutorial. Use for "set up LifeOS" or adding/removing areas.
 ---
 
 # LifeOS setup
@@ -24,7 +24,7 @@ view configs or limits. The tutorial text is in `references/tutorial.md`.
 - No walls of text. Say what the step does and what the user will see in Notion.
 - Use the user's language for the conversation. The dashboard content uses the
   language chosen in step 1a.
-- Never change anything in Notion before step 7 ("Build").
+- Never change anything in Notion before step 6 ("Build").
 
 ## Prerequisites
 
@@ -42,10 +42,10 @@ view configs or limits. The tutorial text is in `references/tutorial.md`.
 
 ### 0. Detect mode
 Search Notion for a page titled "LifeOS Guide".
-- Found → **change mode**: read it (database IDs, areas, WIP) and ask what to change
+- Found → **change mode**: read it (database IDs, areas, language) and ask what to change
   (Add area / Remove area / Rename area / Change an area's view / Change language /
   Rerun full setup).
-  Jump to the matching step, then to 7.
+  Jump to the matching step, then to 6.
 - Not found → **new setup**, continue with 1.
 
 ### 1. Start
@@ -77,32 +77,28 @@ Family, Soul, Travel. Extra choice: Add my own (then ask for names, max 12 areas
 total, keep 1–25 characters each).
 
 ### 4. View per area
-"Each area gets a board by status by default: Parking → Planned → In progress → Done."
+"Each area tab gets two boards by status: Streams (the work) and Goals (the outcomes).
+Parking → Planned → In progress → Done."
 Choices: Boards for all (default) / Choose per area.
-If per area, for each area: Board (default) / Timeline (good for trips, seasons) /
-Table (good for long lists).
+If per area, for each area pick how its streams look: Board (default) / Timeline
+(good for trips, seasons) / Table (good for long lists). The Goals board stays a board.
 
-### 5. Rhythm
-"How many streams can be In progress at once? Fewer = more finishing."
-Choices: 3 / 4 (default) / 5.
-Weekly focus stays at max 3 — mention it, do not ask.
-
-### 6. Periods
+### 5. Periods
 "Goals can carry a period like 'Q1 2027'."
 Choices: Current year + next 2 quarters + next year (default) / My own.
 Compute from today's date.
 
-### 7. Plan → Build
-Show the plan as a short list (areas with their icons, view per area, WIP, periods,
-area pages and other pages to create).
+### 6. Plan → Build
+Show the plan as a short list (areas with their icons, view per area, periods,
+which area pages get renamed, added or moved, and other pages to create).
 Choices: Build / Change something.
 On Build, do these in order and verify each by reading it back:
 
 0. **Language** (skip for English). Translate short and natural, like a native
    Notion user would name things, then rename:
    - Properties on both databases with `RENAME COLUMN`: Name, Type, Area, Status,
-     Next step, Weekly focus, Period, Deadline, When, Success criterion, Tags, Page,
-     Updated, Progress, Goal ↑, Streams ↓, Blocked by, Blocking; Inbox: Idea, Note,
+     Next step, Weekly focus, Period, Deadline, When, Page, Updated, Progress,
+     Goal ↑, Streams ↓; Inbox: Idea, Note,
      Stream, Created, To parking (the button column).
    - Options: Type (🎯 Goal, 🔄 Stream), Status (Parking, Planned, In progress,
      Done), Inbox Status (New, Processed, Dismissed), Period labels, preset areas.
@@ -113,51 +109,66 @@ On Build, do these in order and verify each by reading it back:
    - Button labels ("+ Idea", "Processed") can't be changed through the API.
      With a browser tool, rename them in the button settings; otherwise tell the
      user where to do it.
-   - Everything created later in Build (view names, tab titles, area pages,
-     tutorial, dashboard intro line) is written in the chosen language.
+   - Everything created later in Build (view names "Streams"/"Goals", tab titles,
+     area pages, tutorial, dashboard intro lines) is written in the chosen language.
    - Filters, formulas, relations and button actions point to IDs, not names, so
      renaming keeps them working.
 1. **Area options** on both databases: `ALTER COLUMN "Area" SET SELECT(...)` with the
    chosen areas (keep existing option colors; new ones get unused colors).
    Before removing an option, count records using it; if any, ask first.
 2. **Periods**: `ALTER COLUMN "Period" SET SELECT(...)` on Goals & Streams.
-3. **Area tabs** on the dashboard:
-   - For each new area: create the view with `create_view` (parent = dashboard page,
-     `show_data_source_title` false) using the spec's `area_view` variant, then move
-     the new linked block into a new `<tab>` before `</tabs>` with one
-     `update_content` (include every existing `<database>` tag unchanged).
+3. **Area tabs** on the dashboard. Every area tab holds one linked block with two
+   views: **Streams** (spec `area_streams`, chosen variant) first, **Goals** (spec
+   `area_goals`, board) second. The template's 8 tabs already have both.
+   - For each new area: create the Streams view with `create_view` (parent =
+     dashboard page, `show_data_source_title` false), then add the Goals view to the
+     same block with `create_view` (`database_id` = the new linked block). Move the
+     block into a new `<tab>` before `</tabs>` with one `update_content` (include
+     every existing `<database>` tag unchanged).
+   - Changed view per area: update that tab's Streams view only.
    - For each removed area: say exactly which tab will go, get a yes, then remove
      that tab with `update_content` (`allow_deleting_content: true`). Only the linked
      view goes; records stay.
-   - Rename = rename the option, the tab title and the view name.
+   - Rename = rename the option, the tab title, and the area filter in both views.
 4. **Area pages**: one child page of the dashboard per area, title = area name,
    icon = the area's emoji (presets: Work 💼, Self-development 🌱, Sport 🏃,
    Health ❤️, Finance 💰, Family 🏡, Soul 🕯️, Travel ✈️; for a custom area pick a
-   fitting emoji and show it in the plan). Put the list of area pages at the top of
-   the left column, in tab order, above the tutorial and Databases links. These
-   pages are for the user's own notes and subpages.
-   - Rename an area = rename its page too.
+   fitting emoji and show it in the plan). The list sits at the top of the left
+   column, in tab order, above the tutorial and Databases links. These pages are
+   for the user's own notes and subpages.
+   - **The template already ships the 8 preset pages in that list.** Fetch the
+     dashboard first and match the `<page>` tags in the left `<column>` to the
+     chosen areas by title. Never create a second page for an area that has one.
+   - Kept preset area → leave its page as is.
+   - Renamed area (or new language) → rename its page and set its icon.
+   - New custom area → insert `<page>Name</page>` (no url) into the left column with
+     `update_content`, right after the previous area's page tag, so the order
+     follows the tabs. Then set its icon with `update_properties`.
    - Remove an area = never delete its page (it may hold notes). Ask: keep it in the
      list, or move it out of the list.
+   - Read the dashboard back: every chosen area has exactly one page in the left
+     column, above the tutorial link. If a page is missing, add it and check again.
 5. **Tutorial page** "📖 How LifeOS works" under the dashboard, from
    `references/tutorial.md` with the placeholders filled. Link it in the left
    column right below the area pages. In change mode, update it instead of creating
    a new one.
 6. **LifeOS Guide** page (child of the dashboard, can be collapsed in a toggle):
-   database ids, area list with page links, WIP limit, weekly focus max, setup date,
+   database ids, area list with page links, weekly focus max, setup date,
    skill version, language, and a **Names** section: one line per property and
    option, `English key = name on the dashboard` (also for English, so the format is
    always the same). Other LifeOS skills read this first and use these names.
 
-### 8. Verify
+### 7. Verify
 Fetch the dashboard and both data sources. Check: every chosen area has an option, a
-tab and a page in the left-column list; no tab for a removed area; tutorial and
-Guide exist. Fix and re-check once;
+tab with a Streams and a Goals view, and exactly one page in the left-column list;
+no tab for a removed area; tutorial and Guide exist. Fix and re-check once;
 report anything still off in plain words.
 
-### 9. Finish
+### 8. Finish
 Two lines + links (dashboard, tutorial). Then three first actions:
 press "+ Idea"; pick an area and press "Processed"; mark up to 3 streams as Weekly focus.
+Add one line: everything on the dashboard can be changed by just asking Claude
+(an area, a board, a field, a view), so the user should shape it after a week or two.
 Offer the daily skills (capture, inbox, focus, status, update) if they are not installed,
 and the Notion-skills option (upload them to the user's Notion, see repo README).
 
