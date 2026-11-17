@@ -1,5 +1,5 @@
-# LifeOS for Notion — system spec (v0.1)
-# Snapshot of a working personal setup (captured 2026-11-10), generalised:
+# LifeOS for Notion — system spec (v0.2)
+# Snapshot of a working personal setup (captured 2026-11-10, updated 2026-11-17), generalised:
 # no personal entries, English labels, areas chosen by the user at install time.
 #
 # Used by:
@@ -8,7 +8,7 @@
 
 meta:
   name: LifeOS
-  version: 0.1.0
+  version: 0.2.0
   language: en
   scope: notion-only            # v1: no Obsidian, no other MCP
 
@@ -16,7 +16,6 @@ meta:
 # Rules the system is built around
 # ---------------------------------------------------------------------------
 rules:
-  wip_limit_in_progress_streams: 4     # max streams in "In progress" at once
   weekly_focus_max: 3                  # max streams with "Weekly focus" checked
   next_step_style: "A verb, doable in 30 minutes or less"
   idea_flow: "Idea -> Inbox -> (button) -> Parking of its area -> Planned -> In progress -> Done"
@@ -42,7 +41,7 @@ databases:
     title: "Goals & Streams"
     description: >
       One database for goals and streams. Type: 🎯 Goal = an outcome;
-      🔄 Stream = what I am working on now (with a next step, under the WIP limit).
+      🔄 Stream = what I am working on to get there (with a next step).
       A stream points to its goal via "Goal ↑".
     properties:
       Name:            { type: title }
@@ -74,13 +73,10 @@ databases:
       Period:          { type: select, options: from_install }   # e.g. "Year 2026", "Q4 2026", "Q1 2027"
       Deadline:        { type: date }
       When:            { type: date, description: "Time window from-to (trip, start, season). Deadline is separate." }
-      Success criterion: { type: text }
-      Tags:            { type: multi_select, options: [ { name: Learning, color: blue } ] }
-      Blocked by:      { type: relation, target: goals_streams, dual: Blocking }
-      Blocking:        { type: relation, target: goals_streams, dual: "Blocked by" }
       Page:            { type: url, description: "Link to the working page of the goal or stream" }
       Updated:         { type: last_edited_time }
     excluded_from_v1: [ Obsidian, Place ]
+    removed_in_v0_2: [ Success criterion, Tags, Blocked by, Blocking ]   # fewer fields, cleaner cards
 
   inbox:
     title: Inbox
@@ -130,7 +126,8 @@ dashboard:
     - columns:
         - width: 31
           blocks:
-            - area_pages: true                 # one child page per area, tab order, created by lifeos-setup
+            - area_pages: true                 # one child page per area, tab order. The template ships the 8 presets;
+                                               # lifeos-setup renames, adds or moves them, never recreates them
             - page_link: tutorial              # How LifeOS works
             - page_link: databases
             - view: weekly_focus_list
@@ -157,7 +154,7 @@ dashboard:
         - tab_per_area:                         # generated for every area the user picked
             icon: from_install
             linked_db:
-              views: [ area_view ]              # board / timeline / table — chosen per area
+              views: [ area_streams, area_goals ]   # two boards per area: streams first, goals second
 
 
 # ---------------------------------------------------------------------------
@@ -238,7 +235,7 @@ views:
     icon: "🎯"
     configure: >
       FILTER "Type" = "🎯 Goal" AND "Status" != "Done"; SORT BY "Area" ASC;
-      SHOW "Name", "Area", "Progress", "Streams ↓", "Status", "Period", "Success criterion"
+      SHOW "Name", "Area", "Progress", "Streams ↓", "Status", "Period"
 
   stagnation:
     source: goals_streams
@@ -257,14 +254,25 @@ views:
       FILTER "Type" = "🎯 Goal"; GROUP BY "Area";
       CHART donut AGGREGATE count COLOR colorful HEIGHT large CAPTION "Areas of responsibility · goals per area"
 
-  area_view:                    # template for every area tab
+  area_streams:                 # first view in every area tab: streams only
     source: goals_streams
-    name: "{area}"
+    name: Streams
+    icon: "🔄"
     variants:
-      board:    'FILTER "Area" = "{area}"; GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact; SHOW "Name", "Type", "Goal ↑", "Next step", "Page"'
-      timeline: 'FILTER "Area" = "{area}"; TIMELINE BY "When"; SHOW "Name", "Status"'
-      table:    'FILTER "Area" = "{area}"; SORT BY "Status" ASC; SHOW "Name", "Type", "Status", "Next step", "Deadline"'
+      board:    'FILTER "Area" = "{area}" AND ("Type" = "🔄 Stream" OR "Type" IS EMPTY); GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact; SHOW "Name", "Goal ↑", "Next step"'
+      timeline: 'FILTER "Area" = "{area}" AND ("Type" = "🔄 Stream" OR "Type" IS EMPTY); TIMELINE BY "When"; SHOW "Name", "Status"'
+      table:    'FILTER "Area" = "{area}" AND ("Type" = "🔄 Stream" OR "Type" IS EMPTY); SORT BY "Status" ASC; SHOW "Name", "Status", "Goal ↑", "Next step", "Deadline"'
     default_variant: board
+
+  area_goals:                   # second view in every area tab: goals only, always a board
+    source: goals_streams
+    type: board
+    name: Goals
+    icon: "🎯"
+    configure: >
+      FILTER "Area" = "{area}" AND "Type" = "🎯 Goal";
+      GROUP BY "Status" BY OPTION SHOW EMPTY; CARD LAYOUT compact;
+      SHOW "Name", "Progress", "Period"
 
   inbox_to_process:
     source: inbox
@@ -283,7 +291,8 @@ installer:
     - "User duplicated the public LifeOS template into their workspace"
     - "Notion connector (MCP) is connected in Claude"
   always_created:                 # never asked — part of every install
-    - "Area pages: one page per area at the top of the left column, for the user's own notes"
+    - "Area pages: one page per area at the top of the left column, for the user's own notes (the 8 presets ship with the template)"
+    - "Two boards per area tab: Streams and Goals"
     - "Overview tab with all its views"
     - "Areas wheel (groups goals by Area, so it follows whatever areas the user picked)"
     - "Weekly focus and deadlines lists, Inbox"
@@ -295,17 +304,15 @@ installer:
       ask: "Keep the default 8 areas, or drop / rename / add some?"
       default: area_presets            # all 8, same as the author's setup
     - id: area_views
-      ask: "Each area gets a board by default. Want a timeline or table for any of them?"
+      ask: "Each area gets a Streams board and a Goals board. Want the streams as a timeline or table for any area?"
       default: board
-    - id: wip_limit
-      ask: "How many streams can be In progress at once?"
-      default: 4
     - id: periods
       ask: "Which planning periods? (current year + next quarters are suggested)"
   steps:
     - "Show the plan and wait for an explicit yes"
     - "Set Area options on both databases"
-    - "Create one tab view per area with the chosen variant"
+    - "Create the Streams view (chosen variant) and the Goals board for every new area tab"
+    - "Match area pages to the areas: rename, add or move the template pages; never delete one"
     - "Set Period options"
     - "Verify every change by reading it back"
     - "Write a short Operating Guide page for future agents"
