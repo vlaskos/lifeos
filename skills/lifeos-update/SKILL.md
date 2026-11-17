@@ -26,7 +26,6 @@ English names.
    - deadline/when → Deadline / When
    - new goal/stream → create with Type, Area (ask if unknown), Status = Parking
 3. Guards:
-   - Moving to In progress beyond the WIP limit → say so and ask which one to pause.
    - Weekly focus beyond 3 → ask which one to drop.
    - Never delete records; offer Status = Done or Parking instead.
 4. If the change is exactly what was asked, apply it without an extra question.

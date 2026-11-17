@@ -1,6 +1,6 @@
 ---
 name: lifeos-status
-description: Short LifeOS status from Notion - weekly focus, deadlines, stagnating streams, Inbox count, WIP. Use for "what's my status", "what's next", "where am I", daily check-in.
+description: Short LifeOS status from Notion - weekly focus, deadlines, stagnating streams, Inbox count. Use for "what's my status", "what's next", "where am I", daily check-in.
 ---
 
 # LifeOS status
@@ -8,7 +8,7 @@ description: Short LifeOS status from Notion - weekly focus, deadlines, stagnati
 Read-only summary. Changes nothing.
 
 ## Find LifeOS
-Read the "LifeOS Guide" page (data source ids, WIP limit). No Guide → offer
+Read the "LifeOS Guide" page (data source ids). No Guide → offer
 `lifeos-setup` and stop.
 
 Use field and option names from the Guide's **Names** section. The English names in
@@ -19,7 +19,7 @@ English names.
 - **Focus this week** — streams with Weekly focus, each with its Next step
   (flag ones with no next step).
 - **Deadlines ≤ 30 days** — name + date, nearest first.
-- **WIP** — "In progress 3/4".
+- **In progress** — how many streams are In progress right now.
 - **Stagnation** — up to 3 In progress streams with the oldest Updated time,
   with how long ago.
 - **Inbox** — number of New ideas.

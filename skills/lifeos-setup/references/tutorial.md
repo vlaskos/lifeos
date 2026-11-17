@@ -1,6 +1,6 @@
 <!--
 Tutorial page created by lifeos-setup as "📖 How LifeOS works" (child of the dashboard).
-Placeholders: {areas} — bullet list of the user's areas; {wip} — WIP limit; {date} — setup date.
+Placeholders: {areas} — bullet list of the user's areas; {date} — setup date.
 Keep it short: people skim this page.
 Write it in the dashboard language and use the dashboard's own field and status names.
 -->
@@ -21,7 +21,6 @@ Write it in the dashboard language and use the dashboard's own field and status 
 {areas}
 - **Status** — Parking (idea, not now) → Planned → In progress → Done.
 - **Next step** — one verb, 30 minutes or less. If you can't name it, the stream isn't ready.
-- **WIP limit** — at most {wip} streams In progress at once. Finish before you start.
 - **Weekly focus** — up to 3 streams that get your time this week.
 
 ## What's on the dashboard
@@ -31,7 +30,7 @@ Write it in the dashboard language and use the dashboard's own field and status 
 - **Areas wheel** — how your goals spread across areas.
 - **Inbox to process** — new ideas waiting for an area.
 - **Overview tab** — all streams and goals by status, timeline, goal progress, and Stagnation (streams in progress that haven't changed for the longest time).
-- **Area tabs** — one board per area.
+- **Area tabs** — two boards per area: Streams (the work) and Goals (the outcomes).
 
 ## A simple rhythm
 
