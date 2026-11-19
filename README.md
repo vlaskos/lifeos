@@ -92,6 +92,14 @@ Skill ZIPs are in [Releases](https://github.com/vlaskos/lifeos/releases). In Cla
 | "what's my status?" | `lifeos-status` |
 | "close the stream LinkedIn" | `lifeos-update` |
 
+## Comment to reach Claude
+
+LifeOS is driven from a chat. [cc-notion](https://github.com/vlaskos/cc-notion) adds a second way in: comment `/cc ...` on any Notion page and Claude replies in the same thread, with access to your Notion. A follow-up `/cc` in that thread continues the same conversation.
+
+It is the same model as tagging Meta AI inside a thread on WhatsApp, Instagram, or Threads: you call the assistant from inside the conversation and it answers there, using the thread as context. Here the thread is a Notion comment and the assistant is Claude.
+
+cc-notion runs as a separate, self-hosted add-on, a small webhook listener on your Mac. Setup lives in [its repo](https://github.com/vlaskos/cc-notion).
+
 ## Notion plugin
 
 LifeOS has no Notion server of its own. It uses the official Notion connector or [Notion plugin](https://github.com/makenotion/claude-code-notion-plugin). Their skills handle the rest of your Notion, LifeOS skills only manage the dashboard.
